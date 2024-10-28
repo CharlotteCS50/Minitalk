@@ -6,7 +6,7 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 16:14:13 by cschnath          #+#    #+#             */
-/*   Updated: 2024/10/27 20:55:08 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/10/28 23:09:50 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,32 +33,47 @@ SIGUSR2 back.
 void	ft_signal_handler(int signum, siginfo_t *info, void *context)
 {
 	static int bit_count = 0;
+	static __pid_t	client_pid = 0;
 	static unsigned char c = 0;
 	
-	(void)context; // Set user context to void
-	if (bit_count == 8)
+	(void)context; // Set user context to void bc it's unused
+	if (client_pid == 0) // If it's the first signal
+		client_pid = info->si_pid; // Set client pid 
+	if (signum == SIGUSR1) // SIGUSR1 represents 1
+		c = (c << 1) | 1; // Move bit ("1") by 1
+	else if (signum == SIGUSR2) // SIGUSR2 represents 0
+		c = (c << 1); // Just move on to the next bit
+	ft_printf("\nSignal handler function called %d\n", signum); // Test
+	bit_count++;
+	if (bit_count == 8) // A full byte has been received
 	{
-		if (c == END_TRANSMISSION)
-			write(1, "\n", 1);
+		if (c == '\0') // End of message
+		{
+			kill(client_pid, SIGUSR2); // Send stuff with signal 2
+			client_pid = 0;
+		}
 		else
+		{
 			write(1, &c, 1);
+			kill(client_pid, SIGUSR1); // Send stuff with signal 1
+		}
 		bit_count = 0; // Reset count back to 0
 		c = 0;
 	}
-	printf("Received SIGINT!\n", signum);
-	kill (SIGUSR2);
+	ft_printf("Received SIGINT!\n", signum); // Test
 }
 
+// Waits to receive signals and processes them in ft_signal_handler
 int	main(void)
 {
 	// Sigaction examines and changes a signal action
 	struct sigaction	sa;
 	
 	ft_printf("Server PID: %d\n", getpid());
-	sa.sa_sigaction = &ft_signal_handler;
+	sa.sa_sigaction = ft_signal_handler;
 	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, 0);
-	sigaction(SIGUSR2, &sa, 0);
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
 		pause(); // Wait for signal; returns -1
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 16:14:08 by cschnath          #+#    #+#             */
-/*   Updated: 2024/10/27 19:30:41 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/10/28 23:33:36 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,37 +23,50 @@ to process the received signals.
 
 #include "minitalk.h"
 
-int g_flag = 0; // Global variable, always resets flag to 0
+// Global variable, always resets flag to 0
+// Lets client know when the server has received & processed a bit
+int		g_flag = 0;
 
-// Finish this, not sure how
-void    ft_handler(int signum)
+// Detect acknowledgement signals from the server
+void	ft_handler(int signum)
 {
-    g_flag = 1;
-    
+	if (signum == SIGUSR1 || signum == SIGUSR2)
+		g_flag = 1;
 }
 
-// Work on this! Sends a single bit
+// Sends a single bit, should be done
 void	ft_send_bit(int pid, int bit)
 {
 	int	signal;
-	
+
 	if (bit == 1)
 		signal = SIGUSR1; // Basically only 1s are important
 	else
 		signal = SIGUSR2; // Other one is 0s
+	if (kill(pid, signal) == -1) // Send the signal
+	{
+		// If it doesn't work, sennd error message
+		perror("Error sending signal");
+		exit(EXIT_FAILURE);
+	}
+	g_flag = 0;
+	while (!g_flag)
+		; // Apparently this waits until the signal is processed
 }
 
-// Almost done, sends a char bit by bit
+// Sends a char bit by bit, should be done
 void	ft_send_char(int pid, unsigned char c)
 {
 	int	i;
+	int	bit;
 
-	i = 8;
-	while (i > 0)
+	i = 0;
+	while (i < 8)
 	{
-		ft_send_bit(pid, c >> i); // Change bitwise stuff
-		usleep(); // If it works it should return 0
-		i--;
+		bit = (c >> (7 - i)) & 1; // Get the i-th bit from the left
+		ft_send_bit(pid, bit);
+		usleep(200); // Short delay to make sure signal is being processed
+		i++;
 	}
 }
 
@@ -65,15 +78,34 @@ void	ft_send_string(int pid, const char *str)
 	ft_send_char(pid, '\0'); // Null-terminate the string
 }
 
+// Sends a string to a PID of the server
 int	main(int argc, char *argv[])
 {
-	__pid_t pid; // Predefined struct, not sure if I'm using it right
-
+	__pid_t pid;
+	struct sigaction sa;
 	// Check the command line arguments
-	// Has to be name of program, process id and the message to be sent
+	// Has to be name of program and the message to be sent
 	if (argc != 3)
 	{
-		ft_putstr("Usage: ./client [PID] [string]\n");
+		ft_printf("Usage: ./client [PID] [string]\n");
 		exit(EXIT_FAILURE);
 	}
+	pid = atoi(argv[1]);
+	if (pid <= 0) // Make sure pid is valid
+	{
+		ft_printf("Error: Invalid PID\n");
+		exit(EXIT_FAILURE);
+	}
+	sa.sa_handler = ft_handler;
+	sigemptyset(&sa.sa_mask); // Mask signals that should be blocked
+	sa.sa_flags = 0;
+	sa.sa_flags = SA_SIGINFO;
+	if (sigaction(SIGUSR1, &sa, NULL) == -1
+		|| sigaction(SIGUSR2, &sa, NULL) == -1)
+		{
+			perror("Error setting up signal");
+			exit(EXIT_FAILURE);
+		}
+	ft_send_string(pid, argv[2]);
+	return (0);
 }
