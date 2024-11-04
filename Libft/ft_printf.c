@@ -6,7 +6,7 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 14:56:26 by cschnath          #+#    #+#             */
-/*   Updated: 2024/11/04 20:00:02 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/11/04 20:08:10 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,9 @@ int	find_conversion(char c, va_list args)
 
 int	ft_printf(const char *str, ...)
 {
-	int i;
-	int count;
-	va_list args;
+	int		i;
+	int		count;
+	va_list	args;
 
 	i = 0;
 	count = 0;

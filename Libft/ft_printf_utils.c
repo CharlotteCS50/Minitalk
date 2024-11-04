@@ -6,7 +6,7 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 15:36:45 by cschnath          #+#    #+#             */
-/*   Updated: 2024/11/04 19:59:58 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/11/04 20:12:39 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,12 @@ int	ft_putstr(char *s)
 {
 	if (!s)
 		s = "(null)";
-	return (write(1, s, ft_strlen(s)));
+	return (write(1, s, ft_strlen_printf(s)));
 }
 
 int	ft_count(unsigned int ui, unsigned int base)
 {
-	int count;
+	int	count;
 
 	count = 1;
 	while (ui >= base)
