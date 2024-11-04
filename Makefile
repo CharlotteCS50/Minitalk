@@ -1,5 +1,6 @@
 LIBFT = Libft/libft.a
-SOURCES = server.c client.c server_bonus.c client_bonus.c
+SOURCES = server.c client.c
+SOURCES_BONUS = server_bonus.c client_bonus.c
 OBJECTS = $(SOURCES:.c=.o)
 
 CC = gcc

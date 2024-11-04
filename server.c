@@ -6,7 +6,7 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 16:14:13 by cschnath          #+#    #+#             */
-/*   Updated: 2024/11/04 14:08:32 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/11/04 19:46:51 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,9 @@ int	main(void)
 	sa.sa_flags = SA_SIGINFO | SA_RESTART;
 	sigemptyset(&sa.sa_mask);
 	ft_printf("Server PID: %d\n", getpid());
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
+		sigaction(SIGUSR1, &sa, NULL);
+		sigaction(SIGUSR2, &sa, NULL);
 		pause();
 	return (0);
 }

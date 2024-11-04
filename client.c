@@ -6,7 +6,7 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 16:14:08 by cschnath          #+#    #+#             */
-/*   Updated: 2024/11/04 14:12:41 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/11/04 19:48:05 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	ft_handler(int pid, char c)
 		else
 			kill(pid, SIGUSR1);
 		i--;
-		usleep(420);
+		usleep(100);
 	}
 }
 
