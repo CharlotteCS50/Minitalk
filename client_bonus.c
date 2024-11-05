@@ -6,9 +6,11 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 16:42:06 by cschnath          #+#    #+#             */
-/*   Updated: 2024/11/04 20:09:37 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/11/05 23:48:53 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// Run with make bonus
 
 #include "minitalk.h"
 
@@ -24,7 +26,7 @@ void	ft_handler_b(int pid, char c)
 		else
 			kill(pid, SIGUSR1);
 		i--;
-		usleep(100);
+		usleep(500);
 	}
 }
 
@@ -40,13 +42,13 @@ int	main(int argc, char *argv[])
 	const char	*string;
 	int			flag;
 
-	signal(SIGUSR1, ft_acknowledgement);
 	if (argc != 3)
 	{
 		ft_printf("Usage: ./client [PID] [string]\n");
 		exit(EXIT_FAILURE);
 	}
 	pid = ft_atoi(argv[1]);
+	signal(SIGUSR1, ft_acknowledgement);
 	string = argv[2];
 	flag = 0;
 	while (string[flag])

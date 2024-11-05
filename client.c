@@ -6,24 +6,13 @@
 /*   By: cschnath <cschnath@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 16:14:08 by cschnath          #+#    #+#             */
-/*   Updated: 2024/11/04 19:48:05 by cschnath         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:03:52 by cschnath         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-The client reads the server’s PID and the message from the command-line
-arguments. It iterates over each character in the message.
-For each character, it calls the send_signal function, which will convert the
-character into 8 bits and sends each bit as a signal to the server.
-It uses SIGUSR1 to represent a 1 bit and SIGUSR2 to represent a 0 bit.
-After sending each bit, the client waits for a short duration
-using the usleep function. This delay allows the server
-to process the received signals.
-*/
-
 #include "minitalk.h"
 
-void	ft_handler(int pid, char c)
+void	ft_handler_b(int pid, char c)
 {
 	int	i;
 
@@ -35,8 +24,14 @@ void	ft_handler(int pid, char c)
 		else
 			kill(pid, SIGUSR1);
 		i--;
-		usleep(100);
+		usleep(500);
 	}
+}
+
+void	ft_acknowledgement(int signal)
+{
+	if (signal == SIGUSR1)
+		ft_printf("Server acknowledged the message\n");
 }
 
 int	main(int argc, char *argv[])
@@ -51,9 +46,10 @@ int	main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 	pid = ft_atoi(argv[1]);
+	signal(SIGUSR1, ft_acknowledgement);
 	string = argv[2];
 	flag = 0;
 	while (string[flag])
-		ft_handler(pid, string[flag++]);
-	ft_handler(pid, '\0');
+		ft_handler_b(pid, string[flag++]);
+	ft_handler_b(pid, '\0');
 }
